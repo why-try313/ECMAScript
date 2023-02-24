@@ -24,7 +24,7 @@ bool JavaScript::can_instantiate() const {
 }
 
 StringName JavaScript::get_global_name() const {
-	return StringName();
+	return class_name; // return StringName();
 }
 
 StringName JavaScript::get_instance_base_type() const {
@@ -166,11 +166,16 @@ bool JavaScript::is_tool() const {
 	return javascript_class->tool;
 }
 
-void JavaScript::get_script_method_list(List<MethodInfo> *p_list) const {
+void JavaScript::get_script_method_list(List<MethodInfo> *r_list) const {
 	if (!javascript_class)
 		return;
-	for (const KeyValue<StringName, MethodInfo> &pair : javascript_class->methods) {
-		p_list->push_back(pair.value);
+
+	const JavaScript *current = this;
+	for (const KeyValue<StringName, MethodInfo> &E : current->javascript_class->methods) {
+		MethodInfo mi = current->get_method_info(E.key);
+		mi.name = E.key;
+		mi.arguments = E.value.arguments;
+		r_list->push_back(mi);
 	}
 }
 
