@@ -183,6 +183,7 @@ protected:
 	static void add_debug_binding_info(JSContext *ctx, JSValueConst p_obj, const JavaScriptGCHandler *p_bind);
 
 	const JavaScriptClassInfo *register_javascript_class(const JSValueConst &p_constructor, const String &p_path);
+	const int JS_GetFunctionLength(JSContext *ctx, JSValue func_val);
 	void free_javascript_class(const JavaScriptClassInfo &p_class);
 	static JSValue godot_register_class(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 	static JSValue godot_register_signal(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);

@@ -1892,7 +1892,16 @@ const JavaScriptClassInfo *QuickJSBinder::register_javascript_class(const JSValu
 			if (JS_IsFunction(ctx, value)) {
 				MethodInfo mi;
 				mi.name = E;
+				int propsLen = JS_GetFunctionLength(ctx, value);
+				for (int i = 0; i < propsLen; i++) {
+					String a_name = "val"+itos(i);
+					PropertyInfo nfo;
+					nfo.name = "param"+itos(i);
+					nfo.type = Variant::NIL;
+				 	mi.arguments.push_back(nfo);
+				}
 				js_class.methods.insert(E, mi);
+				printf("%s (%i args)\n", E.utf8().get_data(), propsLen);
 			}
 			JS_FreeValue(ctx, value);
 			JS_FreeAtom(ctx, key);
@@ -1912,6 +1921,17 @@ fail:
 	JS_FreeValue(ctx, tooled);
 	return binder->javascript_classes.getptr(p_path);
 }
+
+const int QuickJSBinder::JS_GetFunctionLength(JSContext *ctx, JSValue func_val) {
+    int argc = 0;
+    JSValue func_name = JS_GetPropertyStr(ctx, func_val, "length");
+    if (!JS_IsException(func_name)) {
+        argc = JS_VALUE_GET_INT(func_name);
+    }
+    JS_FreeValue(ctx, func_name);
+    return argc;
+}
+
 
 void QuickJSBinder::free_javascript_class(const JavaScriptClassInfo &p_class) {
 	JSValue class_func = JS_MKPTR(JS_TAG_OBJECT, p_class.constructor.javascript_object);
